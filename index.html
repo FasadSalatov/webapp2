@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <script src="https://unpkg.com/@tonconnect/sdk@latest/dist/tonconnect-sdk.min.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Document</title>
+    <style>
+        #main {
+            display: block;
+        }
+        #info {
+            display: none;
+        }
+        #market {
+            display: none;
+        }
+
+        #popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+
+        #popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-[#1D1C23]">
+<div id="main">
+    <div class="px-[40px] pt-[20px] w-full" style="background: linear-gradient(140deg, #F8F8F8 0%, #CCD8F0 100%);border-bottom-left-radius: 50px;border-bottom-right-radius: 50px;">
+        <div class="flex justify-between items-start">
+            <div>
+                <h1 class="text-[26px] font-semibold" id="username">Hello Username!</h1>
+                <div class="flex">
+                    <div class="flex items-center bg-white px-[10px] py-[5px] rounded-[20px]">
+                        <img src="/img/standart-coin.svg" alt="">
+                        <span class="mx-[5px]" id="token">15</span>
+                    </div>
+                    <div class="flex items-center ml-[10px] bg-white px-[10px] rounded-[20px] py-[5px]">
+                        <img src="./img/paid-coin.svg" alt="">
+                        <span class="mx-[5px]" id="token-paid">15</span>
+                    </div>
+                </div>
+            </div>
+            <img src="/img/wallet.svg" id="wallet" onclick="connection()" class="mt-[10px] w-[38px]" alt="">
+        </div>
+        <img src="/img/robot.svg" class="relative bottom-[-50px] mx-auto    " alt="">
+        <button onclick="stake()" class="mx-auto flex items-center block text-white bg-[#5137F0] relative py-[20px] px-[50px] rounded-[20px] bottom-[-30px]">
+            <img src="/img/sircle.svg" class="mx-[10px] mt-[5px]" alt="">
+            <span class="text-[20px] font-semibold"  id="stake">Claim</span>
+        </button>
+    </div>
+    <div class="flex justify-between text-white px-[35px] pb-[20px] mt-[50px]">
+        <div class="w-[49%] bg-[#36363E] text-center overflow-hidden rounded-[25px]" style="border: 1px solid #555555">
+            <div class="px-[15px] py-[8px]"><h2 class="font-semibold text-[20px]">Инфо</h2>
+                <img src="/img/line.svg" class="mx-auto my-[5px]" alt="">
+                <p class="text-[14px]">О проекте и <br>
+                    релизах</p></div>
+            <button onclick="showInfo()" style="box-shadow: 1px 4px 33px #5137F0" class="w-full relative block pt-[10px] bg-[#2A2930] rounded-[50px]">
+                <img src="/img/arrow-2.svg" class="mx-auto" alt="">
+            </button>
+        </div>
+        <div class="w-[49%] bg-[#36363E] text-center overflow-hidden rounded-[25px]" style="border: 1px solid #555555">
+            <div class="px-[15px] py-[8px]"><h2 class="font-semibold text-[20px]">Магазин</h2>
+                <img src="/img/line.svg" class="mx-auto my-[5px]" alt="">
+                <p class="text-[14px]">Учавствуй в<br>
+                    предпродаже</p></div>
+            <button onclick="showMarket()" style="box-shadow: 1px 4px 33px #5137F0" class="w-full relative block pt-[10px] bg-[#2A2930] rounded-[50px]">
+                <img src="/img/arrow-2.svg" class="mx-auto" alt="">
+            </button>
+        </div>
+    </div>
+</div>
+<div id="info">
+    <div class="px-[40px] pt-[40px] pb-[20px] w-full" style="background: linear-gradient(140deg, #F8F8F8 0%, #CCD8F0 100%);border-bottom-left-radius: 50px;border-bottom-right-radius: 50px;">
+        <div class="flex justify-between items-start">
+            <div>
+                <div class="flex">
+                    <div class="flex items-center bg-white px-[10px] py-[5px] rounded-[20px]">
+                        <img src="/img/standart-coin.svg" alt="">
+                        <span class="mx-[5px]" id="token2">15</span>
+                    </div>
+                    <div class="flex items-center ml-[10px] bg-white px-[10px] rounded-[20px] py-[5px]">
+                        <img src="./img/paid-coin.svg" alt="">
+                        <span class="mx-[5px]"  id="token-paid2">15</span>
+                    </div>
+                </div>
+            </div>
+            <img src="/img/wallet.svg"  onclick="connection()" id="wallet2" class="w-[38px]" alt="">
+        </div>
+    </div>
+    <div class="px-[40px] mt-[20px]">
+        <div class="flex items-center justify-between">
+            <h2 class="text-white font-semibold text-[26px]">Инфо</h2>
+            <img src="/img/arrow.svg" onclick="showMain()" alt="">
+        </div>
+        <p class="text-white mt-[10px] text-[20px]">Sanction (SNC) - инновационный проект, построенный на блокчейне TON, объединяющий китов, экономистов, маркетологов, популярных инфлюенсеров и простых работяг. </p>
+        <ul class="text-white text-[20px]">
+            <li class="flex">
+                <img src="/img/dot.svg" class="mr-[15px]" alt="">
+                <span>Эмиссия SNC - 15.000.000 </span></li>
+            <li class="flex">
+                <img src="/img/dot.svg" class="mr-[15px]" alt="">
+                <span>Учавствовать в пресейле можно от 1 TON.</span></li>
+        </ul>
+        <p class="text-white mt-[10px] text-[20px]">
+            Наша цель - объединить всех, привести ещё большее количество людей в TON. Это в интересах всего коммьюнити TON.
+            Перед участием в пресейле, советуем ознакомится с Roadmap в нашем <a href="t.me/snc_community">телеграм канале</a>.
+            Приглашай друзей и получай 10% с каждой покупки реферала.
+        <ul class="text-white text-[20px]">
+            <li class="flex">
+                <img src="/img/dot.svg" class="mr-[15px]" alt="">
+                <span>💎 ТОП-5 по количеству рефералов разделят между собой 10000 $SNC + приглашение в чат команды и дополнительные "плюшки".</span></li>
+            <li class="flex">
+                <img src="/img/dot.svg" class="mr-[15px]" alt="">
+                <span> ✅ Остальные ТОП-50 разыграют между собой 15000 $SNC.</span></li>
+        </ul>
+        </p>
+
+    </div>
+</div>
+
+<div id="market">
+    <div class="px-[40px] pt-[40px] pb-[20px] w-full" style="background: linear-gradient(140deg, #F8F8F8 0%, #CCD8F0 100%);border-bottom-left-radius: 50px;border-bottom-right-radius: 50px;">
+        <div class="flex justify-between items-start">
+            <div>
+                <div class="flex">
+                    <div class="flex items-center bg-white px-[10px] py-[5px] rounded-[20px]">
+                        <img src="/img/standart-coin.svg" alt="">
+                        <span class="mx-[5px]" id="token3">15</span>
+                    </div>
+                    <div class="flex items-center ml-[10px] bg-white px-[10px] rounded-[20px] py-[5px]">
+                        <img src="./img/paid-coin.svg" alt="">
+                        <span class="mx-[5px]"  id="token-paid3">15</span>
+                    </div>
+                </div>
+            </div>
+
+            <img src="/img/wallet.svg" onclick="connection()" id="wallet3" class="w-[38px]" alt="">
+        </div>
+    </div>
+    <div class="px-[40px] mt-[20px]">
+        <div class="flex items-center justify-between">
+            <h2 class="text-white font-semibold text-[26px]">Магазин</h2>
+            <img src="/img/arrow.svg"   onclick="showMain()"  alt="">
+        </div>
+        <div class="flex items-center mt-[20px] pr-[10px] w-full bg-[#36363E] rounded-[20px]" style="border: 1px solid #555555">
+            <div class="flex bg-[#D6DFF2] px-[25px] py-[8px] rounded-[20px]">
+                <img src="/img/paid-coin.svg" class="mr-[10px] w-[48px]" alt="">
+                <div>
+                    <h2 class="font-semibold text-[18px]">Sanction</h2>
+                    <img src="/img/line2.svg" alt="">
+                    <div class="flex">
+                        <img src="/img/ton.svg" class="mr-[6px] w-[20px]" alt="">
+                        <span class="font-semibold" id="cost">20</span>
+                    </div>
+                </div>
+            </div>
+            <button onclick="showPopUp()" class="bg-[#5137F0] text-white rounded-[10px] p-[12px] ml-auto mr-[5px]">
+                BUY
+            </button>
+        </div>
+    </div>
+</div>
+<div id="popup-overlay">
+
+    <div id="popup" class="w-[70%] relative" style="background: linear-gradient(140deg, #F8F8F8 0%, #CCD8F0 100%);">
+        <img src="/img/close.svg" onclick="hiddenPop()" class="absolute top-[-50px] left-[45%]" alt="">
+        <div class="flex justify-between">
+            <div class="flex">
+                <img src="/img/paid-coin.svg" class="mr-[5px]" alt="">
+                <span class="font-semibold">Sanction</span>
+            </div>
+
+            <div class="flex">
+                <img src="/img/ton.svg" class="mr-[5px] w-[20px]" alt="">
+                <span class="font-semibold" id="cost2">20</span>
+            </div>
+
+        </div>
+        <div class="flex mt-[12px] justify-center text-[25px] font-semibold">
+            <span onclick="calc(-1)">-</span>
+            <span class="mx-[30px]" id="count">2</span>
+            <span onclick="calc(+1)">+</span>
+        </div>
+        <div class="mt-[12px] flex">
+            <div class="flex items-center">
+                <span class="mr-[10px] font-semibold text-[18px]">Cost:</span>
+                <div class="flex ">
+                    <img src="/img/ton.svg" class="mr-[5px] w-[20px]" alt="">
+                    <span class="font-semibold" id="cost3">20</span>
+                </div>
+            </div>
+            <button class="ml-auto px-[30px] py-[8px] bg-[#5137F0] text-white rounded-[10px]" onclick="buy()">Buy</button>
+        </div>
+    </div>
+</div>
+</body>
+<script src="/img/api.js"></script>
+<script>
+    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+        manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json',
+    });
+
+    let chatId = 1535022702;
+    let tokens = 0;
+    let paid_tokens = 0;
+    let max_paid_token = 0;
+    let max_token_buy_user = 0;
+    let last_claim = 0;
+    let claimClick = false;
+    let buyClick = false;
+    let paid_token_cost = 0;
+    let buyTokens = 1;
+    let wallet = '';
+    let refId;
+
+    let name = '';
+
+
+    async function connectToWallet() {
+        const connectedWallet = await tonConnectUI.connectWallet();
+        // Do something with connectedWallet if needed
+        console.log(connectedWallet);
+    }
+
+    function connection(){
+        if(!tonConnectUI.connected){
+            connectToWallet().then(() => {
+                addWallet(TON_CONNECT_UI.toUserFriendlyAddress(tonConnectUI.wallet.account.address), chatId);
+                document.getElementById("wallet").src = "/img/wallet-connect.svg";
+                document.getElementById("wallet2").src = "/img/wallet-connect.svg";
+                document.getElementById("wallet3").src = "/img/wallet-connect.svg";
+            })
+        } else {
+            tonConnectUI.disconnect().then(() => {
+                document.getElementById("wallet").src = "/img/wallet.svg";
+                document.getElementById("wallet2").src = "/img/wallet.svg";
+                document.getElementById("wallet3").src = "/img/wallet.svg";
+
+            });
+        }
+    }
+
+    async function user(){
+        let user = await getUser(chatId);
+        paid_tokens = user.paid_token;
+        last_claim = user.last_claim_token;
+        tokens = user.token;
+        refId = user?.referral_id
+        document.getElementById('token-paid').innerHTML = paid_tokens;
+        document.getElementById('token').innerHTML = tokens;
+        document.getElementById('token-paid2').innerHTML = paid_tokens;
+        document.getElementById('token2').innerHTML = tokens;
+        document.getElementById('token-paid3').innerHTML = paid_tokens;
+        document.getElementById('token3').innerHTML = tokens;
+
+        if(!tonConnectUI.connected){
+            document.getElementById("wallet").src = "/img/wallet-connect.svg";
+            document.getElementById("wallet2").src = "/img/wallet-connect.svg";
+            document.getElementById("wallet3").src = "/img/wallet-connect.svg";
+        } else {
+            console.log(123);
+            document.getElementById("wallet").src = "/img/wallet-connect.svg";
+            document.getElementById("wallet2").src = "/img/wallet-connect.svg";
+            document.getElementById("wallet3").src = "/img/wallet-connect.svg";
+        }
+
+    }
+
+    async function setting(){
+        let setting = await getSetting();
+        max_paid_token = setting['max_token'];
+        max_token_buy_user = setting['max_buy'];
+        paid_token_cost = setting['cost'];
+        document.getElementById('cost').innerHTML = paid_token_cost
+        document.getElementById('cost2').innerHTML = paid_token_cost
+
+
+    }
+    async function stake(){
+        let last_claimL = new Date(Date.parse(last_claim));
+        if((!last_claim || last_claimL.setDate(last_claimL.getDate()+1) < new Date()) && !claimClick){
+            claimClick = true;
+            await claimToken(chatId)
+            claimClick = false
+            user();
+        }
+    }
+    function checkBtn(){
+        let last_claimL = new Date(Date.parse(last_claim));
+        if(!last_claim || last_claimL.setDate(last_claimL.getDate()+1) < new Date()){
+            document.getElementById('stake').innerHTML = 'Claim';
+        } else {
+            const deadline = last_claimL
+            const diff = deadline - new Date();
+            console.log(new Date(), new Date(Date.parse(last_claim)))
+            const hours = diff > 0 ? Math.floor(diff / 1000 / 60 / 60) % 24 : 0;
+            const minutes = diff > 0 ? Math.floor(diff / 1000 / 60) % 60 : 0;
+            const seconds = diff > 0 ? Math.floor(diff / 1000) % 60 : 0;
+            document.getElementById('stake').innerHTML = `${hours}:${minutes}:${seconds}`;
+        }
+    }
+
+    function showMain(){
+        document.getElementById('info').style.display = 'none';
+        document.getElementById('main').style.display = 'block';
+        document.getElementById('market').style.display = 'none';
+        user().then(() => {
+        }).catch(() => {})
+
+    }
+
+    function showInfo(){
+        document.getElementById('info').style.display = 'block';
+        document.getElementById('main').style.display = 'none';
+        document.getElementById('market').style.display = 'none';
+        user().then(() => {
+        }).catch(() => {})
+
+    }
+
+    function buy(){
+        if(buyClick){
+            return;
+        }
+        buyClick = true;
+        buyClick = false
+
+        if(refId){
+            tonConnectUI.sendTransaction({
+                validUntil:  new Date().getTime() + 3600,
+                messages: [
+                    {
+                        address: 'UQABiboln8Rs_3y0l7xKyuL74tbP0aBEUiOAEf82QGQKrE-m', // destination address
+                        amount: 1000000000*paid_token_cost*buyTokens - (1000000000*paid_token_cost*buyTokens * 0.1)
+                    },
+                    {
+                        address: refId, // destination address
+                        amount: (1000000000*paid_token_cost*buyTokens * 0.1)
+                    }
+                ]
+            })
+                .then(async res => {
+
+                    buyClick = false
+                    buyToken(chatId, buyTokens).then().catch(e => {})
+                    user().then().catch(e => {})
+                    hiddenPop()
+                    showMain()
+                }).catch(err => {
+            })
+        } else {
+
+            tonConnectUI.sendTransaction({
+                validUntil:  new Date().getTime() + 3600,
+                messages: [
+                    {
+                        address: 'UQABiboln8Rs_3y0l7xKyuL74tbP0aBEUiOAEf82QGQKrE-m', // destination address
+                        amount: 1000000000*paid_token_cost*buyTokens
+                    }
+                ]
+            })
+                .then(async res => {
+                    buyClick = false
+                    buyToken(chatId, buyTokens).then().catch(e => {})
+                    user().then().catch(e => {})
+                    hiddenPop()
+                    showMain()
+                }).catch(err => {
+            })
+
+        }
+
+    }
+
+    function calc(val){
+        if(buyTokens+val+paid_tokens > max_token_buy_user){
+            return alert("you buy all pre-sale coin. Claim every day.Wait start game")
+        }
+        if(buyTokens+val < 1){
+            return alert("min buy token: 1")
+        }
+
+        document.getElementById('count').innerHTML = buyTokens+val;
+        buyTokens+=val;
+
+        document.getElementById('cost3').innerHTML = buyTokens*paid_token_cost;
+    }
+
+    function showPopUp() {
+        if(!tonConnectUI.connected){
+            connection()
+        } else {
+            document.getElementById('count').innerHTML = buyTokens;
+            document.getElementById('cost3').innerHTML = buyTokens*paid_token_cost;
+            document.getElementById('popup-overlay').style.display = 'block'
+        }
+    }
+
+    function hiddenPop(){
+        document.getElementById('popup-overlay').style.display = 'none'
+    }
+    function showMarket(){
+        setting().then().catch(() => {})
+        document.getElementById('info').style.display = 'none';
+        document.getElementById('main').style.display = 'none';
+        document.getElementById('market').style.display = 'block';
+        user().then(() => {
+        }).catch(() => {})
+    }
+
+    document.addEventListener('DOMContentLoaded', e => {
+        let tg = window?.Telegram?.WebApp;
+        tg.expand();
+        chatId = tg.initDataUnsafe.user.id
+        name = tg.initDataUnsafe.user.first_name;
+        document.getElementById('username').innerHTML = `Hello ${name}!`
+        user().then(() => {
+            setInterval(checkBtn, 1000);
+        })
+
+
+    })
+</script>
+</html>
